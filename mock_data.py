@@ -60,7 +60,7 @@ catalog = [
         "image": "./images/pen.png",
         "description": "The Patron of Art Edition Henry E. Steinway refers to the classic beauty of a Steinway piano. A gold-coated piano frame decorates the cap whereas the cap of the 888 edition is made of artfully skeletonized Au 750 solid gold. Black and white piano keys adorn the barrel of the 888 edition. The clip resembles the patented screw used for bending the grand piano rim. “Steinway & Sons”, the name to be found above the keyboard of every Steinway piano, is engraved on the cone ring of these Limited Editions, completed by an engraved portrait of Henry E. Steinway on the Au 750 solid gold nib.",
         "price": 4255.6,
-        "catagory": "Home",
+        "catagory": "Office",
 
     }
 ]
