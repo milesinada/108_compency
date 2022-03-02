@@ -3,9 +3,12 @@ from mock_data import catalog
 from me_data import me
 import random
 import json 
+from flask_cors import CORS
+from config import db
 
 #Create the server/app
 app = Flask("server")
+CORS(app) #Allows the server to be called from any orgin
 
 
 @app.route("/myaddress")
@@ -38,7 +41,14 @@ def about():
 
 @app.route("/api/catalog")
 def get_catalog():
-    return json.dumps(catalog)
+
+    cursor = db.products.find({})
+    results = []
+    for prod in cursor:
+        prod["_id"] = str(prod["_id"])
+        results.append(prod)
+
+    return json.dumps(results)
 
 
 @app.route("/api/catalog", methods=["POST"])
@@ -51,21 +61,29 @@ def save_products():
     if not "price" in product:
         return abort(400, "Price is missing.")
 
-    if not isinstance(product["price"], int) or isinstance(product["price"], float):
+    if not isinstance(product["price"], int) and not isinstance(product["price"], float):
         return abort(400, "Invaild price credentials.")
 
     if (product["price"]) < 1:
         return abort(400, "Invalid price, too low.")
 
-    product["_id"] = random.randint(10000, 50000)
-    catalog.append(product)
+    db.products.insert_one(product)
+
+    #Hack to fix the _id
+    product["_id"] = str(product["_id"])
+
+
     return json.dumps(product)
 
 # get /api.catalog/count
 # return the num of products
 @app.route("/api/catalog/count")
 def get_count():
-    count = len(catalog)
+    cursor = db.products.find({})
+    count = 0
+    for prod in cursor:
+        count += 1
+    
     return  json.dumps(count)
         
 #get /api/catalog/sum
@@ -115,17 +133,18 @@ def get_category():
 
 @app.route("/api/catalog/<catagory>")
 def products_by_catagory(catagory):
-    for prod in catalog:
-        #print(prod["title"])
-        res = []
-        if prod["catagory"] == catagory :
-            print(prod["title"])
-            res.append(prod)
-        return json.dumps(res)
+    res = []
+    cursor = db.products.find({ "catagory" : catagory})
+    for prod in cursor:
+
+        prod["_id"] = str(prod["_id"])
+        res.append(prod)
+
+    return json.dumps(res)
 
     
 #######################################################
-################# API ENDPOINT for coupon codes########
+################# API ENDPOINT for coupon codes #######
 #######################################################
 
 
